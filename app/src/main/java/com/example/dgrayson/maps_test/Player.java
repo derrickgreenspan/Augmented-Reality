@@ -17,7 +17,7 @@ public class Player {
     private double latitude;
     private double longitude;
     private int itemsCollected = 0;
-    public int score = 60000;
+    public int score = 600000;
 
     public AlertDialog.Builder alert;
 
