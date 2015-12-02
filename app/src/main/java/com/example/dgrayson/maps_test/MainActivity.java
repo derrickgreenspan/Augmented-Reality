@@ -17,6 +17,7 @@ import android.widget.ImageButton;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.games.Games;
+import com.google.android.gms.games.achievement.Achievement;
 import com.google.example.games.basegameutils.BaseGameUtils;
 
 public class MainActivity extends AppCompatActivity implements
@@ -43,7 +44,7 @@ public class MainActivity extends AppCompatActivity implements
                 .build();
 
         findViewById(R.id.sign_in_button).setOnClickListener(this);
-        findViewById(R.id.sign_out_button).setOnClickListener(this);
+
     }
 
     @Override
@@ -105,8 +106,8 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onConnected(Bundle bundle) {
-        findViewById(R.id.sign_in_button).setVisibility(View.GONE);
-        findViewById(R.id.sign_out_button).setVisibility(View.VISIBLE);
+        // Unlock Dragonball Hunter achivement
+        Games.Achievements.unlock(mGoogleApiClient, getResources().getString(R.string.dragonball_hunter_achivement_id));
     }
 
     @Override
@@ -123,9 +124,6 @@ public class MainActivity extends AppCompatActivity implements
         else if(v.getId() == R.id.sign_out_button){
             mSignInClicked = false;
             Games.signOut(mGoogleApiClient);
-
-            findViewById(R.id.sign_in_button).setVisibility(View.VISIBLE);
-            findViewById(R.id.sign_out_button).setVisibility(View.GONE);
         }
     }
 

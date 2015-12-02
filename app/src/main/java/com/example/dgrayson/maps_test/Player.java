@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.location.Location;
 import android.location.LocationManager;
+import android.provider.ContactsContract;
+
 import com.google.android.gms.maps.model.Circle;
 
 import java.util.ArrayList;
@@ -16,7 +18,7 @@ public class Player {
 
     private double latitude;
     private double longitude;
-    private int itemsCollected = 0;
+    public int itemsCollected = 0;
     public int score = 600000;
 
     public AlertDialog.Builder alert;
@@ -26,6 +28,16 @@ public class Player {
         this.longitude = lon;
 
         alert = new AlertDialog.Builder(a);
+
+        if(DataHolder.getData() == "easy"){
+            this.score = 18000000;
+        }
+        else if (DataHolder.getData() == "medium") {
+            this.score = 12000000;
+        }
+        else if (DataHolder.getData() == "hard") {
+            this.score = 600000;
+        }
     }
 
     public double getLatitude(){
