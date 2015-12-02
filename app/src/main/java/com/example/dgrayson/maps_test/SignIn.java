@@ -17,10 +17,6 @@ public class SignIn extends ActionBarActivity implements
         View.OnClickListener,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
-
-    public double latitude = 28.601975;
-    public double longitude = -81.200553;
-
     private static int RC_SIGN_IN = 9001;
 
     private boolean mResolvingConnectionFailure = false;
