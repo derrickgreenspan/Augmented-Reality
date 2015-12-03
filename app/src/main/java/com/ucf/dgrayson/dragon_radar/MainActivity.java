@@ -17,13 +17,16 @@ public class MainActivity extends AppCompatActivity implements
         View.OnClickListener,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
+    // Variables used to check connectoin status
     private static int RC_SIGN_IN = 9001;
-
     private boolean mResolvingConnectionFailure = false;
     private boolean mAutoStartSignInflow = true;
     private boolean mSignInClicked = false;
 
+    // API client used to connect to google play services
     private GoogleApiClient mGoogleApiClient;
+
+    // Mediaplayer to play sounds
     private MediaPlayer mp;
 
     @Override
@@ -31,14 +34,18 @@ public class MainActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Create new media player with dragon radar button sound effect
         mp = MediaPlayer.create(this, R.raw.dragonball_radar);
 
+        // Create client to connect to google play services
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(Games.API).addScope(Games.SCOPE_GAMES)
                 .build();
 
+
+        // Set the onclick listener for the sign in button
         findViewById(R.id.sign_in_button).setOnClickListener(this);
         //findViewById(R.id.demobutton).setOnClickListener(this);
     }
@@ -65,23 +72,35 @@ public class MainActivity extends AppCompatActivity implements
         return super.onOptionsItemSelected(item);
     }
 
+
+    //Start the game
     public void startGame(View v){
 
+        // If the button sound is still playing stop it
         if(mp.isPlaying())
             mp.stop();
 
+
+        // play button sound
         mp.start();
+
+        // Launch new activity
         Intent intent = new Intent(this, MapsActivity.class);
         this.startActivity(intent);
 
     }
 
+
+    // Launch the difficulty screen
     public void launchDifficutlyScreen(View v){
         mp.start();
+
         Intent i = new Intent(this, DifficultyScreen.class);
         startActivity(i);
     }
 
+
+    // Exit app
     public void Exit(View view) {
         mp.start();
         mGoogleApiClient.disconnect();
@@ -98,12 +117,14 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onConnectionSuspended(int i) {
+        // Reconnect to client if connection is suspended
         mGoogleApiClient.connect();
     }
 
     @Override
     public void onClick(View v) {
 
+        // play button sound
         mp.start();
 
         if(v.getId() == R.id.sign_in_button ){
@@ -115,6 +136,9 @@ public class MainActivity extends AppCompatActivity implements
         }*/
     }
 
+
+    // Function used to check if the failed connectino is resolveing itself, if not an appropriate
+    // error message will be displayed
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
         if(mResolvingConnectionFailure){

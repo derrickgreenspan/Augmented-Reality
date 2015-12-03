@@ -20,23 +20,27 @@ public class Player {
 
     public AlertDialog.Builder alert;
 
+    // Create player object
     public Player(double lat, double lon, MapsActivity a){
         this.latitude = lat;
         this.longitude = lon;
 
         alert = new AlertDialog.Builder(a);
 
+        // Change initial score depending on difficulty
         if(DataHolder.getData() == "easy"){
-            this.score = 18000000;
+            this.score = 1800000;
         }
         else if (DataHolder.getData() == "medium") {
-            this.score = 12000000;
+            this.score = 1200000;
         }
         else if (DataHolder.getData() == "hard") {
             this.score = 600000;
         }
     }
 
+
+    // getters and setter s to return longitude adn latitidue
     public double getLatitude(){
         return this.latitude;
     }
@@ -45,28 +49,28 @@ public class Player {
         return this.longitude;
     }
 
-    public void setLatitude(double lat){
-        this.latitude = lat;
-    }
-
-    public void setLongitude(double lon){
-        this.longitude = lon;
-    }
-
     public void updateLocation(double lat, double lon){
         this.latitude = lat;
         this.longitude = lon;
     }
 
+
+    // Functino used to check teh current location and determine if a dragonball is within range
     public void checkLocation(ArrayList<Dragonball> list, Circle circ){
+
+        // Variable used to store distance
         float[] distance = new float[2];
 
         for(int i = 0; i < list.size(); i++){
 
+            // Check the distance between two points
             Location.distanceBetween(list.get(i).latitude, list.get(i).longitude, circ.getCenter().latitude,
                     circ.getCenter().longitude, distance);
 
+            // If the item is within the circle display message and remove item list and marker from the map
             if(distance[0] < circ.getRadius()) {
+
+                // Display message on screen
                 alert.setMessage("You picked up the " + list.get(i).star + " star Dragonball!" );
                 alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
@@ -75,6 +79,8 @@ public class Player {
                     }
                 });
                 alert.show();
+
+                // Remove marker and increment itemes collected
                 list.get(i).removeMarker();
                 list.remove(i);
                 this.itemsCollected++;

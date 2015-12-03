@@ -9,19 +9,25 @@ import com.google.android.gms.maps.model.MarkerOptions;
 /**
  * Created by dgrayson on 11/23/2015.
  */
+
 public class Dragonball {
 
+    //
     public int star;
     public double latitude, longitude;
     private Marker marker;
 
     public Dragonball(int star, LatLng pos, GoogleMap map){
+
+        // Id number of object
         this.star = star;
+
+        // Postision of dragonball object
         this.latitude = pos.latitude;
         this.longitude = pos.longitude;
 
+        // Generate the marker on the map
         switch(star) {
-
             case 1:
                 this.marker = map.addMarker(new MarkerOptions().position(pos).title("This is the " + star + " star Dragonball!").icon(BitmapDescriptorFactory.fromResource(R.drawable.ball1)));
                 break;
@@ -46,6 +52,7 @@ public class Dragonball {
         }
     }
 
+    // Remove the dragonball from the map
     public void removeMarker(){
         marker.remove();
     }

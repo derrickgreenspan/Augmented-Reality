@@ -24,26 +24,30 @@ public class DifficultyScreen extends Activity implements View.OnClickListener{
 
         mp = MediaPlayer.create(this, R.raw.dragonball_radar);
 
-
+        // Set onclick listeners for buttons
         findViewById(R.id.easybutton).setOnClickListener(this);
         findViewById(R.id.mediumbutton).setOnClickListener(this);
         findViewById(R.id.hardbutton).setOnClickListener(this);
-        //findViewById(R.id.backbutton).setOnClickListener(this);
     }
 
+
+    // Move to previous activity
     public void back(View view) {
         mp.start();
         setResult(RESULT_OK);
         finish();
     }
 
+    // On click function
     @Override
     public void onClick(View v) {
-
+        // play button sound
         mp.start();
 
+        // Get the string containing the difficulty
         String diff = DataHolder.getData();
 
+        // Change difficulty to the difficulty selected
         if(v.getId() == R.id.easybutton){
             diff = "easy";
             alert.setMessage("Difficulty set to Easy.");
@@ -78,6 +82,7 @@ public class DifficultyScreen extends Activity implements View.OnClickListener{
             alert.show();
         }
 
+        // Send string back to data holder object
         DataHolder.setData(diff);
     }
 }

@@ -33,6 +33,8 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private GoogleApiClient mGoogleApiClient;
 
+
+    // Center point of map
     private LatLng UCF = new LatLng(28.601975, -81.200553);
 
     // Map Boundary Variables
@@ -42,22 +44,28 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
     private LatLng sUCF = new LatLng(28.599044, -81.200218);
 
 
-
+    // Player object
     public Player p;
 
+    // Location listener to track player location
     public LocationListener locListener;
     public LocationManager locManager;
 
+    // circle object to detect if dragon balls are in range
     Circle circle = null;
 
+
+    // variables of difficulty and timer
     public String diff;
     public long timer;
 
+    // booelean variable to determine whether or not the leader board has been displayed
     public boolean leaderboardShown = false;
 
-    // Alert dialog used for debugging
+    // Alert dialog used to displaay messages
     public AlertDialog.Builder alert;
 
+    // Array list to display dragon ball objects
     private ArrayList<Dragonball> list = new ArrayList<Dragonball>();
 
     @Override
@@ -66,29 +74,44 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
         setContentView(R.layout.activity_maps);
         setUpMapIfNeeded();
 
+        // create new alert dialog object
         alert = new AlertDialog.Builder(this);
+
         leaderboardShown = false;
+
+        // Set the player location if the map has been created
         if(mMap != null) {
             mMap.setMyLocationEnabled(true);
         }
 
+        // create player object
         p = new Player(0, 0, this);
 
+        // Create google api client
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(Games.API).addScope(Games.SCOPE_GAMES)
                 .build();
 
+        // Get the selected difficulty
         getDifficulty();
 
+
+        // This countdown timer tracks how much time has passed since the game started
+        // timer is measured in millisecons
         new CountDownTimer(timer, 1000){
 
+
+            // On every timer tick decrease player score by 1
             public void onTick(long millisUntilFinished){
                 p.score--;
             }
 
+            // If timer runs out end game
             public void onFinish(){
+
+                // Display time up message
                 alert.setMessage("Time UP");
                 alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
@@ -99,8 +122,11 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
 
                 alert.show();
 
+                // Check if the leaderboard has been shown
                 if(leaderboardShown == false) {
 
+                    // Depending on which difficulty has been selected send the score to the appropriate leaderboard
+                    // and Display that leaderboard
                     if(DataHolder.getData() == "easy" || DataHolder.getData() == "demo"){
                         Games.Leaderboards.submitScore(mGoogleApiClient, getResources().getString(R.string.EASY_LEADERBOARD_ID), p.score);
                         startActivityForResult(Games.Leaderboards.getLeaderboardIntent(mGoogleApiClient, "CgkI2buDlbEcEAIQAA"), 1);
@@ -113,10 +139,13 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
                         Games.Leaderboards.submitScore(mGoogleApiClient, getResources().getString(R.string.HARD_LEADERBOARD_ID), p.score);
                         startActivityForResult(Games.Leaderboards.getLeaderboardIntent(mGoogleApiClient, "CgkI2buDlbEcEAIQCA"), 1);
                     }
-                    //launchMainMenu();
+
+                    //Set variable to true
                     leaderboardShown = true;
                 }
 
+                // If the leader board has been shown then the game has ended
+                // return to the main menu
                 if(leaderboardShown == true){
                     launchMainMenu();
                 }
@@ -126,19 +155,22 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
 
     }
 
+
+    // Connect client when activity starts
     @Override
     protected void onStart(){
         super.onStart();
         mGoogleApiClient.connect();
     }
 
+    // Set up map when resuming activity
     @Override
     protected void onResume() {
         super.onResume();
         setUpMapIfNeeded();
-        //mGoogleApiClient.connect();
     }
 
+    // Quit app
     @Override
     protected void onStop(){
         super.onStop();
@@ -190,8 +222,6 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
         // Change the google map type
         mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
 
-        //mMap.addTileOverlay(new TileOverlayOptions().tileProvider(new CustomTileMapProvider(getResources().getAssets())));
-
 
         // Add center marker
        // mMap.addMarker(new MarkerOptions().position(UCF).title("This is UCF"));
@@ -207,34 +237,28 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
 
             LatLng pos = generateCoordinates();
 
+            // create new dragonball objects
             switch (i) {
                 case 0:
                     list.add(new Dragonball(1, pos, mMap));
-                    //mMap.addMarker(new MarkerOptions().position(pos).title("This is the " + (i + 1) + " star Dragonball!").icon(BitmapDescriptorFactory.fromResource(R.drawable.ball1)));
                     break;
                 case 1:
                     list.add(new Dragonball(2, pos, mMap));
-                    //mMap.addMarker(new MarkerOptions().position(pos).title("This is the " + (i + 1) + " star Dragonball!").icon(BitmapDescriptorFactory.fromResource(R.drawable.ball2)));
                     break;
                 case 2:
                     list.add(new Dragonball(3, pos, mMap));
-                    //mMap.addMarker(new MarkerOptions().position(pos).title("This is the " + (i + 1) + " star Dragonball!").icon(BitmapDescriptorFactory.fromResource(R.drawable.ball3)));
                     break;
                 case 3:
                     list.add(new Dragonball(4, pos, mMap));
-                    //mMap.addMarker(new MarkerOptions().position(pos).title("This is the " + (i + 1) + " star Dragonball!").icon(BitmapDescriptorFactory.fromResource(R.drawable.ball4)));
                     break;
                 case 4:
                     list.add(new Dragonball(5, pos, mMap));
-                    //mMap.addMarker(new MarkerOptions().position(pos).title("This is the " + (i + 1) + " star Dragonball!").icon(BitmapDescriptorFactory.fromResource(R.drawable.ball5)));
                     break;
                 case 5:
                     list.add(new Dragonball(6, pos, mMap));
-                    //mMap.addMarker(new MarkerOptions().position(pos).title("This is the " + (i + 1) + " star Dragonball!").icon(BitmapDescriptorFactory.fromResource(R.drawable.ball6)));
                     break;
                 case 6:
                     list.add(new Dragonball(7, pos, mMap));
-                    //mMap.addMarker(new MarkerOptions().position(pos).title("This is the " + (i + 1) + " star Dragonball!").icon(BitmapDescriptorFactory.fromResource(R.drawable.ball7)));
                     break;
             }
         }
@@ -247,21 +271,24 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
             // Update player coordinates when location has changed
             public void onLocationChanged(Location loc){
 
+                // If a cirlce has been drawn on the map remove it
                 if(circle != null) {
                     circle.remove();
                 }
 
                 p.updateLocation(loc.getLatitude(), loc.getLongitude());
 
-
+                // Create a new circle with a 20m radius to detect dragonballs
                 circle = mMap.addCircle(new CircleOptions()
                         .center(new LatLng(p.getLatitude(), p.getLongitude()))
                         .radius(20)
                         .fillColor(Color.TRANSPARENT)
                         .strokeColor(Color.TRANSPARENT ));
 
+                // Check current location to detect dragonballs
                 p.checkLocation(list, circle);
 
+                // check if achivements have been unlocked
                 if(p.itemsCollected > 0){
                     if(p.itemsCollected == 1){
                         Games.Achievements.unlock(mGoogleApiClient, getResources().getString(R.string.dragonball_finder_achivement_id));
@@ -271,6 +298,7 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
                     }
                 }
 
+                // If the dragonball list is empty the game is over
                 if(list.size() == 0){
                     if(leaderboardShown == false) {
                         alert.setMessage("You have collected all of the dragonballs!");
@@ -282,8 +310,10 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
                         });
                         alert.show();
 
+                        // unlock the acivement
                         Games.Achievements.unlock(mGoogleApiClient, getResources().getString(R.string.dragonball_knight_achivement_id));
 
+                        // Send score to appropriate leaderboard
                         if(DataHolder.getData() == "easy"){
                             Games.Leaderboards.submitScore(mGoogleApiClient, getResources().getString(R.string.EASY_LEADERBOARD_ID), p.score);
                             startActivityForResult(Games.Leaderboards.getLeaderboardIntent(mGoogleApiClient, "CgkI2buDlbEcEAIQAA"), 1);
@@ -302,11 +332,13 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
 
                 }
 
+                // Reeturn to main menu
                 if(leaderboardShown == true){
                     launchMainMenu();
                 }
             }
 
+            // Unused functions that must be implemented
             @Override
             public void onStatusChanged(String provider, int status, Bundle extras){}
 
@@ -331,10 +363,13 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
 
         boolean running = true;
 
+        // Run until valid coordinates are generated then break the loop
         while(running) {
             tempLat = sUCF.latitude + (nUCF.latitude - sUCF.latitude) * r.nextDouble();
             tempLng = wUCF.longitude + (eUCF.longitude - wUCF.longitude) * r.nextDouble();
 
+            // Check to make sure dragonballs have not be  generated in various unsafe or undesireable locations
+            // Location include the Fountain, Woods next to Student Union, various Parkinglots, Lake Claire apartments and the Arboretun
             if(!inFountain(tempLat, tempLng) && !inStudentUnion(tempLat, tempLng) && !inParkingLot(tempLat, tempLng) && !inArboretum(tempLat, tempLng) && !inLakeClaireApts(tempLat, tempLng))
                 running = false;
         }
@@ -342,16 +377,25 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
         return new LatLng(tempLat, tempLng);
     }
 
+
+    // Return to main menu
     public void launchMainMenu(){
         finish();
     }
 
+
+    // Get the difficulty that has been selected
     public void getDifficulty(){
+
+        // Obtain difficulty string from dataholder class
         diff = DataHolder.getData();
 
+        // Change the timer based on difficulty
         switch(diff){
             case "easy":
                 timer = 1800000;
+
+                // Display message on screen
                 alert.setMessage("Difficulty set to Easy mode. You have 30 minutes to find all of the Dragonballs.");
                 alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                     @Override
@@ -363,6 +407,8 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
                 break;
             case "medium":
                 timer = 1200000;
+
+                // Display message on screen
                 alert.setMessage("Difficulty set to Medium mode. You have 20 minutes to find all of the Dragonballs.");
                 alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                     @Override
@@ -374,6 +420,8 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
                 break;
             case "hard":
                 timer = 600000;
+
+                // Display message on screen
                 alert.setMessage("Difficulty set to Hard mode. You have 10 minutes to find all of the Dragonballs.");
                 alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                     @Override
@@ -385,6 +433,8 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
                 break;
             case "demo":
                 timer = 60000;
+
+                // Display message on screen
                 alert.setMessage("Demo mode started. The timer will run for 1 minute");
                 alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                     @Override
@@ -397,6 +447,9 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
         }
     }
 
+
+    // The next few fucntinos are used as checks to make sure Dragonballs have not been generated in unsafe or
+    // otherwise undesireable locations
     public Boolean inStudentUnion(double lat, double lng){
         LatLng wUnion = new LatLng(28.602372, -81.201327);
         LatLng eUnion = new LatLng(28.602232, -81.199142);
@@ -494,8 +547,11 @@ public class MapsActivity extends FragmentActivity implements View.OnClickListen
             return false;
     }
 
+
+    // Code used for network communications
     @Override
     public void onConnected(Bundle bundle) {
+
         // unlock dragonball seeker achivement
         Games.Achievements.unlock(mGoogleApiClient, getResources().getString(R.string.dragonball_seeker_achivement_id));
     }
